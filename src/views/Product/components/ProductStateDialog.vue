@@ -5,7 +5,7 @@
     :fullscreen="dialogProps.fullscreen"
     :max-height="dialogProps.maxHeight"
     :cancel-dialog="cancelDialog"
-    width="50%"
+    width="35%"
   >
     <div :style="'width: calc(100% - ' + dialogProps.labelWidth! / 2 + 'px)'">
       <el-form
@@ -21,7 +21,7 @@
           <el-date-picker
             v-model="dialogProps.row.time"
             type="datetime"
-            :placeholder="'请选择${dialogProps.title}时间'"
+            :placeholder="`请选择${dialogProps.title}时间`"
             value-format="YYYY-MM-DD HH:mm:ss"
             :disabled-date="(time) => time.getTime() < Date.now() - 8.64e7"
           />
@@ -41,7 +41,6 @@
 import { ref, computed } from 'vue'
 import { dayjs, ElMessage, FormInstance } from 'element-plus'
 import { Dialog } from '@/components/Dialog'
-
 interface DialogProps {
   title: string
   isView: boolean
@@ -58,7 +57,7 @@ const dialogProps = ref<DialogProps>({
   title: '',
   row: {},
   labelWidth: 160,
-  fullscreen: true,
+  fullscreen: false,
   maxHeight: '500px'
 })
 
@@ -66,7 +65,7 @@ const dialogProps = ref<DialogProps>({
 const acceptParams = (params: DialogProps): void => {
   params.row = { ...dialogProps.value.row, ...params.row }
   dialogProps.value = { ...dialogProps.value, ...params }
-  if (dialogProps.value.title === '商品定时上架') {
+  if (dialogProps.value.title === '商品上架') {
     dialogProps.value.row.time = dialogProps.value.row.onShelfTime
   } else {
     dialogProps.value.row.time = dialogProps.value.row.offShelfTime
@@ -94,6 +93,7 @@ const rules = computed(() => ({
         if (selected.isBefore(now, 'minute')) {
           return callback(new Error(`${dialogProps.value.title}时间不能早于当前时间`))
         }
+
         callback() // 校验通过
       },
       trigger: 'change'

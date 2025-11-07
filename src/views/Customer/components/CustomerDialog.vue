@@ -7,7 +7,7 @@
     :cancel-dialog="cancelDialog"
     width="50%"
   >
-    <div :style="'width: calc(100% - ' + dialogProps.labelWidth / 2 + 'px)'">
+    <div :style="'width: calc(100% - ' + dialogProps.labelWidth! / 2 + 'px)'">
       <el-form
         ref="ruleFormRef"
         label-position="right"
@@ -18,40 +18,42 @@
         :hide-required-asterisk="dialogProps.isView"
       >
         <el-form-item label="客户名称" prop="name">
-          <el-input v-model="dialogProps.row.name" placeholder="请填写客户名称" clearable maxlength="20" show-word-limit></el-input>
+          <el-input v-model="dialogProps.row!.name" placeholder="请填写客户名称" clearable maxlength="50" show-word-limit></el-input>
         </el-form-item>
-        <el-form-item label="客户手机" prop="phone">
-          <el-input v-model="dialogProps.row.phone" placeholder="请填写客户手机" clearable maxlength="11" show-word-limit></el-input>
+        <el-form-item label="客户手机号" prop="phone">
+          <el-input v-model="dialogProps.row!.phone" placeholder="请填写客户手机号" clearable maxlength="11" show-word-limit></el-input>
         </el-form-item>
         <el-form-item label="客户邮箱" prop="email">
-          <el-input v-model="dialogProps.row.email" placeholder="请填写客户邮箱" clearable maxlength="50" show-word-limit></el-input>
+          <el-input v-model="dialogProps.row!.email" placeholder="请填写客户邮箱" clearable maxlength="100" show-word-limit></el-input>
         </el-form-item>
         <el-form-item label="客户地址" prop="address">
-          <el-input v-model="dialogProps.row.address" placeholder="请填写客户地址" clearable maxlength="50" show-word-limit></el-input>
+          <el-input v-model="dialogProps.row!.address" placeholder="请填写客户地址" clearable maxlength="100" show-word-limit></el-input>
         </el-form-item>
         <el-form-item label="客户等级" prop="level">
-          <el-select v-model="dialogProps.row.level" filterable="请选择客户等级">
-            <el-option v-for="item in Object.values(CustomerLevelList)" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="dialogProps.row!.level" filterable placeholder="请选择客户等级" class="w-full">
+            <el-option v-for="item in Object.values(CustomerLevelList)" :key="item.value" :label="item.label" :value="item.value" class="isabel-option" />
           </el-select>
         </el-form-item>
         <el-form-item label="客户来源" prop="source">
-          <el-select v-model="dialogProps.row.source" filterable="请选择客户来源">
-            <el-option v-for="item in Object.values(CustomerSourceList)" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="dialogProps.row!.source" filterable placeholder="请选择客户来源" class="w-full">
+            <el-option v-for="item in Object.values(CustomerSourceList)" :key="item.value" :label="item.label" :value="item.value" class="isabel-option" />
           </el-select>
         </el-form-item>
         <el-form-item label="跟进状态" prop="followStatus">
-          <el-select v-model="dialogProps.row.followStatus" filterable="请选择客户跟进状态">
-            <el-option v-for="item in Object.values(FollowUpStatusList)" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="dialogProps.row!.followStatus" filterable placeholder="请选择客户跟进状态" class="w-full">
+            <el-option v-for="item in Object.values(FollowUpStatusList)" :key="item.value" :label="item.label" :value="item.value" class="isabel-option" />
           </el-select>
         </el-form-item>
+
         <el-form-item label="是否为关键决策人" prop="isKeyDecisionMaker">
-          <el-select v-model="dialogProps.row.isKeyDecisionMaker" filterable="请选择客户是否为关键决策人">
-            <el-option v-for="item in Object.values(IsKeyDecisionMakerList)" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="dialogProps.row!.isKeyDecisionMaker" filterable placeholder="请选择客户是否为关键决策人" class="w-full">
+            <el-option v-for="item in Object.values(IsKeyDecisionMakerList)" :key="item.value" :label="item.label" :value="item.value" class="isabel-option" />
           </el-select>
         </el-form-item>
+
         <el-form-item label="客户性别" prop="gender">
-          <el-select v-model="dialogProps.row.gender" filterable="请选择客户性别">
-            <el-option v-for="item in Object.values(GenderList)" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="dialogProps.row!.gender" filterable placeholder="请选择客户性别" class="w-full">
+            <el-option v-for="item in Object.values(GenderList)" :key="item.value" :label="item.label" :value="item.value" class="isabel-option" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -86,7 +88,7 @@ const dialogProps = ref<DialogProps>({
   title: '',
   row: {},
   labelWidth: 160,
-  fullscreen: true,
+  fullscreen: false,
   maxHeight: '500px'
 })
 
@@ -121,6 +123,7 @@ const rules = reactive({
   level: [{ required: true, message: '客户级别不能为空', trigger: 'blur' }],
   source: [{ required: true, message: '客户来源不能为空', trigger: 'blur' }]
 })
+
 const ruleFormRef = ref<FormInstance>()
 
 const handleSubmit = () => {
