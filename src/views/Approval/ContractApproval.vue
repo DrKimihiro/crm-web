@@ -9,18 +9,11 @@
       :dataCallback="dataCallback"
       :searchCol="{ xs: 2, sm: 3, md: 4, lg: 6, xl: 8 }"
     >
-      <template #tableHeader>
-        <el-button type="primary" :icon="CirclePlus" v-hasPermi="['sys:contract:add']" @click="openDrawer('新增')">新增合同</el-button>
-      </template>
-      <!-- 表格操作 -->
       <template #operation="scope">
-        <el-button type="primary" link :icon="EditPen" v-hasPermi="['sys:contract:edit']" @click="openDrawer('编辑', scope.row)">编辑</el-button>
-        <el-button type="success" link :icon="MessageBox" v-hasPermi="['sys:contract:print']" @click="openPrintDrawer('打印合同', scope.row)">打印</el-button>
-        <el-button type="info" link :icon="Share" v-hasPermi="['sys.contract:audit']" @click="startApproval(scope.row)" v-if="scope.row.status === 0">审核</el-button>
+        <el-button type="success" link :icon="CircleCheckFilled" v-hasPermi="['sys:contract:pass']" @click="approvalContract(scope.row, 0)">审核通过</el-button>
+        <el-button type="danger" link :icon="CircleCheckFilled" v-hasPermi="['sys:contract:reject']" @click="approvalContract(scope.row, 1)">审核不通过</el-button>
       </template>
     </ProTable>
-    <ContractDialog ref="dialogRef" />
-    <PrintContractDialog ref="printDialogRef" />
   </div>
 </template>
 
@@ -30,16 +23,14 @@ import { ColumnProps } from '@/components/ProTable/interface'
 import ProTable from '@/components/ProTable/index.vue'
 import { ContractApi } from '@/api/modules/contract'
 import { ContractStatusList } from '@/configs/enum'
-import { CirclePlus, EditPen, MessageBox } from '@element-plus/icons-vue'
-import ContractDialog from './components/ContractDialog.vue'
-import PrintContractDialog from './components/PrintContractDialog.vue'
+import { CircleCheckFilled } from '@element-plus/icons-vue'
 import { useHandleData } from '@/hooks/useHandleData'
 
 // 获取 ProTable 元素，调用其获取刷新数据方法（还能获取到当前查询参数，方便导出携带参数）
 const proTable = ref()
 
 // 如果表格需要初始化请求参数，直接定义传给 ProTable(之后每次请求都会自动带上该参数，此参数更改之后也会一直带上，改变此参数会自动刷新表格数据)
-const initParam = reactive({})
+const initParam = reactive({ status: 1 })
 
 // dataCallback 是对于返回的表格数据做处理，如果你后台返回的数据不是 datalist && total 这些字段，那么你可以在这里进行处理成这些字段
 const dataCallback = (data: any) => {
@@ -106,37 +97,9 @@ const columns: ColumnProps[] = [
   },
   { prop: 'operation', label: '操作', fixed: 'right', width: 330 }
 ]
-
-// 打开 drawer(新增、查看、编辑)
-const dialogRef = ref()
-const openDrawer = (title: string, row: Partial<any> = {}) => {
-  let params = {
-    title,
-    row: { ...row },
-    isView: title === '查看',
-    api: ContractApi.saveOrEdit,
-    getTableList: proTable.value.getTableList,
-    maxHeight: '550px'
-  }
-  dialogRef.value.acceptParams(params)
-}
-
-// 打印合同
-const printDialogRef = ref()
-const openPrintDrawer = (title: string, row: Partial<any> = {}) => {
-  let params = {
-    title,
-    row: { ...row },
-    isView: true,
-    maxHeight: '600px',
-    fullscreen: true
-  }
-  printDialogRef.value.acceptParams(params)
-}
-
-// 开始审核合同
-const startApproval = async (row: any) => {
-  await useHandleData(ContractApi.startApproval, { id: row.id }, '发起合同审核')
+//合同审核
+const approvalContract = async (row: any, type: number) => {
+  await useHandleData(ContractApi.approvalContract, { id: row.id, type }, type === 0 ? '审核通过' : '审核不通过')
   proTable.value.getTableList()
 }
 </script>
